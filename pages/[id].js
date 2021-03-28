@@ -1,85 +1,78 @@
 import Head from "next/head";
 import React from 'react';
-import { useRouter } from "next/router";
 
 export const config = { amp: true };
 
 export default function AmpTest({ res }) {
-        const router = useRouter();
+		const data = res.data;
+        const jobLocation = data.jobLocation;
+        const url = "/job/1";
 
-    if(router.isFallback) {
-        return "Loading..."
-    }
+        const ApplyBtn = (
+            <div>
+                <button
+                    id="apply-btn"
+                    on="tap:apply-btn.hide,subscribe-form.show"
+                    className="button-3d bg-blue-light button-center border-blue-dark uppercase ultrabold">Apply Online</button>
+                <div id="subscribe-form" hidden>
+                    <h6 className="center-text">
+                        <i className="fa fa-info-circle"></i> Before proceeding, would you like to opt-in for a daily email update for similar jobs?
+                    </h6>
+                    <form
+                method="POST"
+                action-xhr={url}
+                target="_top"
+                on="submit:subscribe-form.hide,subscribe-processing.show,error-message.hide;
+                  submit-error:subscribe-processing.hide,subscribe-form.show,error-message.show,AMP.setState({'message': event.response.message || 'Whoops! Something went wrong.'});
+                  submit-success:redirecting.show,subscribe-processing.hide;
+                  "
+            >
+                <div id="error-message" className="bg-red-dark center-text" data-amp-bind-text="message" hidden>Test</div>
+                <input type="email"
+                       name="email"
+                       placeholder="Please enter your email here"
+                       className="input-bar"
+                       required
+                />
+                <input type="hidden"
+                       name="value"
+                       value="1"
+                       required />
+                <input type="hidden"
+                       name="type"
+                       value="3"
+                       required />
+                <input type="submit"
+                       id="subscribe-submit-btn"
+                       className="button-3d bg-blue-light button-center border-blue-dark uppercase ultrabold"
+                       value="Subscribe" />
 
-    const data = res.data;
-    const jobLocation = data.jobLocation;
-    const url = "/job/1";
+                <div id="take-to-page">
+					<div>
+						<a className="center-text" href="#">
+							No thanks, take me to the apply page <i className="fa fa-external-link"></i>
+						</a>
+						<br/>
+					</div>
+                </div>
+            </form>
 
-    const ApplyBtn = (
-        <div>
-            <button
-                id="apply-btn"
-                on="tap:apply-btn.hide,subscribe-form.show"
-                className="button-3d bg-blue-light button-center border-blue-dark uppercase ultrabold">Apply Online</button>
-            <div id="subscribe-form" hidden>
-                <h6 className="center-text">
-                    <i className="fa fa-info-circle"></i> Before proceeding, would you like to opt-in for a daily email update for similar jobs?
-                </h6>
-                <form
-            method="POST"
-            action-xhr={url}
-            target="_top"
-            on="submit:subscribe-form.hide,subscribe-processing.show,error-message.hide;
-              submit-error:subscribe-processing.hide,subscribe-form.show,error-message.show,AMP.setState({'message': event.response.message || 'Whoops! Something went wrong.'});
-              submit-success:redirecting.show,subscribe-processing.hide;
-              "
-        >
-            <div id="error-message" className="bg-red-dark center-text" data-amp-bind-text="message" hidden>Test</div>
-            <input type="email"
-                   name="email"
-                   placeholder="Please enter your email here"
-                   className="input-bar"
-                   required
-            />
-            <input type="hidden"
-                   name="value"
-                   value="1"
-                   required />
-            <input type="hidden"
-                   name="type"
-                   value="3"
-                   required />
-            <input type="submit"
-                   id="subscribe-submit-btn"
-                   className="button-3d bg-blue-light button-center border-blue-dark uppercase ultrabold"
-                   value="Subscribe" />
-
-            <div id="take-to-page">
-                <div>
-                    <a className="center-text" href="#">
-                        No thanks, take me to the apply page <i className="fa fa-external-link"></i>
-                    </a>
-                    <br/>
+                </div>
+                <button id="subscribe-processing" className="button-3d bg-yellow-light button-center border-night-dark uppercase ultrabold" hidden disabled><i className="fa fa-cog fa-spin"/> Processing</button>
+                <div id="redirecting" hidden>
+                    <button className="button-3d bg-green-light button-full border-green-light uppercase ultrabold" disabled>Redirecting... Please wait</button>
                 </div>
             </div>
-        </form>
+        );
+        const ExpiredBtn = (
+            <a className="button-3d bg-btn-expired button-center uppercase ultrabold">
+                Job Expired
+            </a>
+        );
 
-            </div>
-            <button id="subscribe-processing" className="button-3d bg-yellow-light button-center border-night-dark uppercase ultrabold" hidden disabled><i className="fa fa-cog fa-spin"/> Processing</button>
-            <div id="redirecting" hidden>
-                <button className="button-3d bg-green-light button-full border-green-light uppercase ultrabold" disabled>Redirecting... Please wait</button>
-            </div>
-        </div>
-    );
-    const ExpiredBtn = (
-        <a className="button-3d bg-btn-expired button-center uppercase ultrabold">
-            Job Expired
-        </a>
-    );
-
-    const JobPosting = (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(data.meta_data)}} />
-    );
+        const JobPosting = (
+            <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(data.meta_data)}} />
+        );
 
 	return (
 		<div>
@@ -1826,7 +1819,7 @@ export async function getStaticPaths() {
         // pre-fetching data
         paths: [],
         // Enable statically generating additional pages while the API is calling
-        fallback: true,
+        fallback: 'blocking',
     }
 }
 
