@@ -1819,7 +1819,7 @@ export async function getStaticPaths() {
         // pre-fetching data
         paths: [],
         // Enable statically generating additional pages while the API is calling
-        fallback: 'blocking',
+        fallback: true,
     }
 }
 
